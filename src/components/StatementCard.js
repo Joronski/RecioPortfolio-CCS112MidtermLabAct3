@@ -14,10 +14,12 @@ import { useUI } from "../context/UIProvider";
 const StatementCard = ({
   product,
   onAddToCart,
+  onAddToWishlist,
   glareIntensity = 0.35,
   borderRadius = "16px",
   hoverScale = 1.04,
   isInCart = false,
+  isInWishlist = false,
 }) => {
   const { theme, darkMode } = useUI();
   const cardRef = useRef(null);
@@ -40,6 +42,12 @@ const StatementCard = ({
     setAdded(true);
     setTimeout(() => setAdded(false), 700);
   }, [onAddToCart, product]);
+
+  const handleWishlist = useCallback(() => {
+    if (onAddToWishlist) {
+      onAddToWishlist(product);
+    }
+  }, [onAddToWishlist, product]);
 
   const isCyber = theme === "cyber";
 
@@ -220,10 +228,10 @@ const StatementCard = ({
               transition: "all 0.2s",
               letterSpacing: "0.05em",
             }}
-          >
+>
             {added ? "✓ ADDED" : "+ CART"}
-          </motion.button>
-        </div>
+            </motion.button>
+          </div>
       </div>
     </motion.div>
   );

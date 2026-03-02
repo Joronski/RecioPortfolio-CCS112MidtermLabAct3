@@ -13,11 +13,13 @@ import "./App.css";
 const AppInner = () => {
   const { theme, darkMode, activeCategory } = useUI();
 
-  // State 
+// State 
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
 
@@ -79,6 +81,26 @@ const AppInner = () => {
     setCart([]);
   }, []);
 
+  // Wishlist handlers
+  const handleAddToWishlist = useCallback((product) => {
+    setWishlist((prev) => {
+      const existing = prev.find((i) => i.id === product.id);
+      if (existing) {
+        return prev.filter((i) => i.id !== product.id);
+      }
+      return [...prev, { ...product }];
+    });
+  }, []);
+
+  const handleRemoveFromWishlist = useCallback((id) => {
+    setWishlist((prev) => prev.filter((i) => i.id !== id));
+  }, []);
+
+  const handleMoveToCart = useCallback((item) => {
+    handleAddToCart(item);
+    handleRemoveFromWishlist(item.id);
+  }, [handleAddToCart, handleRemoveFromWishlist]);
+
   // Filtered products 
   const filteredProducts =
     activeCategory === "All"
@@ -86,6 +108,7 @@ const AppInner = () => {
       : products.filter((p) => p.category === activeCategory);
 
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const wishlistCount = wishlist.length;
 
   // Render 
   return (
@@ -97,7 +120,9 @@ const AppInner = () => {
 
       <Navbar
         cartCount={cartCount}
+        wishlistCount={wishlistCount}
         onCartOpen={() => setCartOpen(true)}
+        onWishlistOpen={() => setWishlistOpen(true)}
         onSearchOpen={() => setSearchOpen(true)}
       />
 
@@ -169,6 +194,7 @@ const AppInner = () => {
               { label: "PRODUCTS", value: products.length },
               { label: "CATEGORIES", value: CATEGORIES.length - 1 },
               { label: "IN CART", value: cartCount },
+              { label: "WISHLIST", value: wishlistCount },
               { label: "TOTAL", value: `₱${totalPrice.toFixed(0)}` },
             ].map(({ label, value }) => (
               <div key={label} style={{ textAlign: "center" }}>
@@ -232,10 +258,12 @@ const AppInner = () => {
                   <StatementCard
                     product={product}
                     onAddToCart={handleAddToCart}
+                    onAddToWishlist={handleAddToWishlist}
+                    isInCart={cart.some((c) => c.id === product.id)}
+                    isInWishlist={wishlist.some((w) => w.id === product.id)}
                     glareIntensity={theme === "cyber" ? 0.4 : 0.2}
                     borderRadius={theme === "cyber" ? "10px" : "18px"}
                     hoverScale={theme === "cyber" ? 1.05 : 1.03}
-                    isInCart={cart.some((c) => c.id === product.id)}
                   />
                 </div>
               ))}
@@ -263,6 +291,18 @@ const AppInner = () => {
         onRemove={handleRemoveFromCart}
         onUpdateQty={handleUpdateQty}
         onClearCart={handleClearCart}
+      />
+
+      {/* ── Wishlist Sidebar ── */}
+      <Cart
+        isOpen={wishlistOpen}
+        onClose={() => setWishlistOpen(false)}
+        cartItems={wishlist}
+        onRemove={handleRemoveFromWishlist}
+        onUpdateQty={() => {}}
+        onClearCart={() => setWishlist([])}
+        isWishlist={true}
+        onMoveToCart={handleMoveToCart}
       />
 
       {/* ── Search Modal ── */}
