@@ -1,38 +1,236 @@
-.App {
-  text-align: center;
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+/* CSS Variables */
+:root {
+  --cyan-primary: #00E5FF;
+  --cyan-secondary: #00BCD4;
+  --cyan-deep: #006064;
+  --cyan-muted: rgba(0, 229, 255, 0.08);
+  --cyan-border: rgba(0, 229, 255, 0.18);
+
+  --font-display: 'Rajdhani', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Dark Mode */
+[data-mode="dark"] {
+  --text-primary: #E8F8FF;
+  --text-secondary: rgba(180, 230, 245, 0.6);
+  --bg-primary: #050A14;
+  --bg-secondary: #08111F;
+  --card-bg: rgba(0, 20, 35, 0.85);
+  --nav-bg: rgba(5, 10, 20, 0.8);
+  --skeleton-bg: rgba(0, 229, 255, 0.06);
+  --skeleton-shine: rgba(0, 229, 255, 0.1);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Light Mode */
+[data-mode="light"] {
+  --text-primary: #003344;
+  --text-secondary: rgba(0, 80, 110, 0.65);
+  --bg-primary: #E8F8FF;
+  --bg-secondary: #D0F0FA;
+  --card-bg: rgba(220, 248, 255, 0.9);
+  --nav-bg: rgba(224, 248, 255, 0.85);
+  --skeleton-bg: rgba(0, 188, 212, 0.08);
+  --skeleton-shine: rgba(0, 188, 212, 0.15);
+  --cyan-border: rgba(0, 188, 212, 0.25);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.App-link {
-  color: #61dafb;
+html {
+  scroll-behavior: smooth;
 }
 
-@keyframes App-logo-spin {
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb {
+  background: var(--cyan-secondary);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--cyan-primary); }
+
+/* App root background */
+.app-root {
+  background: var(--bg-primary);
+  transition: background 0.4s ease;
+}
+
+/* Navbar / Branding */
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+/* Buttons */
+.btn-ghost-cyan {
+  background: transparent;
+  border: 1px solid var(--cyan-border);
+  color: var(--cyan-primary);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  text-decoration: none;
+}
+
+.btn-ghost-cyan:hover {
+  background: var(--cyan-muted);
+  border-color: var(--cyan-primary);
+}
+
+.btn-cyan-primary {
+  background: var(--cyan-primary);
+  border: none;
+  color: #000;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-cyan-primary:hover {
+  opacity: 0.9;
+}
+
+/* Cyber Theme Decorations */
+[data-theme="cyber"] .card-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--cyan-primary);
+  border-style: solid;
+  opacity: 0.6;
+  z-index: 3;
+  transition: opacity 0.3s;
+}
+
+[data-theme="cyber"] .card-corner-tl {
+  top: 8px;
+  left: 8px;
+  border-width: 1.5px 0 0 1.5px;
+}
+
+[data-theme="cyber"] .card-corner-br {
+  bottom: 8px;
+  right: 8px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+/* Hover reveals corner decoration brightness */
+[data-theme="cyber"] .card-corner:hover {
+  opacity: 1;
+}
+
+/* Hero Banner Animation */
+@keyframes fadeInUp {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(24px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton Loader */
+.skeleton-card {
+  height: 340px;
+  border-radius: 16px;
+  background: var(--skeleton-bg);
+  border: 1px solid var(--cyan-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-shine) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+  transform: translateX(-100%);
+}
+
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* Cyber Grid Background Pattern */
+[data-theme="cyber"][data-mode="dark"] .app-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Checkout button glow */
+[data-theme="cyber"] .btn-checkout {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+[data-theme="cyber"] .btn-checkout:hover {
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 229, 255, 0.25);
+  color: var(--text-primary);
+}
+
+/* Focus rings */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--cyan-primary);
+  outline-offset: 2px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .hero-banner {
+    padding: 32px 16px 24px !important;
   }
 }
